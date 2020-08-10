@@ -1,0 +1,18 @@
+groups:
+- name: example    # 规则所属组的名称
+  interval: 1s      # 规则计算间隔
+  rules:
+  - alert: InstanceDown  # 告警名称
+    expr: up == 1        # 表达式
+    for: 5s              # 持续时间
+    labels:              # 规则维度信息
+      severity: page
+    annotations:
+      summary: "{{ $labels.instance }} of job {{ $labels.job }} has been down for more 5 minutes"
+  - record: job:http_inprogress_requests:sum  # 告警名称
+    expr: sum(http_inprogress_requests) by (job)        # 表达式
+    # for: 5s              # 持续时间
+    labels:              # 规则维度信息
+      severity: page
+    # annotations:
+    #   summary: "{{ $labels.instance }} of job {{ $labels.job }} has been down for more 5 minutes"

@@ -21,6 +21,7 @@ require (
 	github.com/docker/docker v17.12.0-ce-rc1.0.20200621004740-33fba35d42e7+incompatible
 	github.com/docker/go-connections v0.4.0 // indirect
 	github.com/edsrzf/mmap-go v1.0.0
+	github.com/go-delve/delve v1.5.0
 	github.com/go-kit/kit v0.10.0
 	github.com/go-logfmt/logfmt v0.5.0
 	github.com/go-openapi/errors v0.19.4 // indirect
@@ -30,6 +31,7 @@ require (
 	github.com/go-openapi/strfmt v0.19.5
 	github.com/go-openapi/swag v0.19.9 // indirect
 	github.com/go-openapi/validate v0.19.8 // indirect
+	github.com/go-sql-driver/mysql v1.5.0
 	github.com/gogo/protobuf v1.3.1
 	github.com/golang/snappy v0.0.1
 	github.com/google/pprof v0.0.0-20200507031123-427632fa3b1c
@@ -45,7 +47,8 @@ require (
 	github.com/jpillora/backoff v1.0.0 // indirect
 	github.com/json-iterator/go v1.1.9
 	github.com/julienschmidt/httprouter v1.3.0 // indirect
-	github.com/mattn/go-colorable v0.1.6 // indirect
+	github.com/mattn/go-colorable v0.1.7 // indirect
+	github.com/mattn/go-runewidth v0.0.9 // indirect
 	github.com/miekg/dns v1.1.29
 	github.com/mitchellh/mapstructure v1.2.2 // indirect
 	github.com/moby/term v0.0.0-20200611042045-63b9a826fb74 // indirect
@@ -57,6 +60,7 @@ require (
 	github.com/opencontainers/image-spec v1.0.1 // indirect
 	github.com/opentracing-contrib/go-stdlib v0.0.0-20190519235532-cf7a6c988dc9
 	github.com/opentracing/opentracing-go v1.1.0
+	github.com/peterh/liner v1.2.0 // indirect
 	github.com/pkg/errors v0.9.1
 	github.com/pmezard/go-difflib v1.0.0
 	github.com/prometheus/alertmanager v0.20.0
@@ -67,15 +71,18 @@ require (
 	github.com/shurcooL/httpfs v0.0.0-20190707220628-8d4bc4ba7749
 	github.com/shurcooL/vfsgen v0.0.0-20181202132449-6a9ea43bcacd
 	github.com/soheilhy/cmux v0.1.4
+	github.com/spf13/cobra v1.0.0 // indirect
 	github.com/uber/jaeger-client-go v2.23.1+incompatible
 	github.com/uber/jaeger-lib v2.2.0+incompatible
 	go.mongodb.org/mongo-driver v1.3.2 // indirect
+	go.starlark.net v0.0.0-20200804153121-4379bb3f9ac0 // indirect
 	go.uber.org/atomic v1.6.0 // indirect
+	golang.org/x/arch v0.0.0-20200511175325-f7c78586839d // indirect
 	golang.org/x/crypto v0.0.0-20200422194213-44a606286825 // indirect
 	golang.org/x/net v0.0.0-20200602114024-627f9648deb9
 	golang.org/x/oauth2 v0.0.0-20200107190931-bf48bf16ab8d
 	golang.org/x/sync v0.0.0-20200317015054-43a5402ce75a
-	golang.org/x/sys v0.0.0-20200602225109-6fdc65e7d980
+	golang.org/x/sys v0.0.0-20200810151505-1b9f1253b3ed
 	golang.org/x/time v0.0.0-20200416051211-89c76fbcd5d1
 	golang.org/x/tools v0.0.0-20200603131246-cc40288be839
 	google.golang.org/api v0.26.0

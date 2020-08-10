@@ -53,6 +53,7 @@ import (
 	"github.com/prometheus/prometheus/config"
 	"github.com/prometheus/prometheus/discovery"
 	sd_config "github.com/prometheus/prometheus/discovery/config"
+	"github.com/prometheus/prometheus/models"
 	"github.com/prometheus/prometheus/notifier"
 	"github.com/prometheus/prometheus/pkg/labels"
 	"github.com/prometheus/prometheus/pkg/logging"
@@ -90,6 +91,8 @@ func init() {
 	if err != nil {
 		panic(err)
 	}
+
+	models.Initialization("root:root@tcp(localhost:3306)/prometheus")
 }
 
 func main() {

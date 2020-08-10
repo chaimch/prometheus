@@ -29,6 +29,7 @@ import (
 	"github.com/prometheus/client_golang/prometheus"
 	"github.com/prometheus/common/model"
 
+	"github.com/prometheus/prometheus/models"
 	"github.com/prometheus/prometheus/pkg/labels"
 	"github.com/prometheus/prometheus/pkg/rulefmt"
 	"github.com/prometheus/prometheus/pkg/timestamp"
@@ -911,6 +912,16 @@ func (m *Manager) Update(interval time.Duration, files []string, externalLabels 
 		}
 		return errors.New("error loading rules, previous rule set restored")
 	}
+	dbgroups, errs := m.LoadGroupsByDB(interval, externalLabels)
+	if errs != nil {
+		for _, e := range errs {
+			level.Error(m.logger).Log("msg", "loading db groups failed", "err", e)
+		}
+		return errors.New("error loading db rules, previous rule set restored")
+	}
+	for k, v := range dbgroups {
+		groups[k] = v
+	}
 	m.restored = true
 
 	var wg sync.WaitGroup
@@ -967,6 +978,95 @@ func (m *Manager) Update(interval time.Duration, files []string, externalLabels 
 	m.groups = groups
 
 	return nil
+}
+
+// LoadGroups reads groups from a list of files.
+func (m *Manager) LoadGroupsByDB(
+	interval time.Duration, externalLabels labels.Labels,
+) (map[string]*Group, []error) {
+	groups := make(map[string]*Group)
+
+	var datasource string
+	for _, label := range externalLabels {
+		if label.Name == "cluster" {
+			datasource = label.Value
+			break
+		}
+	}
+	if datasource == "" {
+		return groups, nil
+	}
+
+	shouldRestore := !m.restored
+
+	var rName, rFn string
+	// 获取规则列表
+	rulelist, rerr := models.QueryRuleString(datasource)
+	if rerr != nil {
+		return nil, []error{rerr}
+	}
+
+	itv := interval
+	rules := make([]Rule, 0, rulelist.Len())
+
+	// 遍历规则列表
+	for e := rulelist.Front(); e != nil; e = e.Next() {
+		r := (e.Value).(models.RuleItem)
+		rName = r.Name
+		rFn = r.Fn
+
+		// 解析规则表达式
+		expr, err := parser.ParseExpr(r.Expr)
+		if err != nil {
+			return nil, []error{err}
+		}
+
+		// 规则计算间隔
+		if r.Interval != 0 {
+			itv = time.Duration(r.Interval)
+		}
+
+		if r.Alert != "" {
+			// 持续时间
+			dur, derr := model.ParseDuration(r.For)
+			if derr != nil {
+				return nil, []error{err}
+			}
+
+			// 构建 AlertingRule 实例, 并将其添加到 rules 中
+			rules = append(rules, NewAlertingRule(
+				r.Alert,
+				expr,
+				time.Duration(dur),
+				labels.FromMap(r.Labels),
+				labels.FromMap(r.Annotations),
+				externalLabels,
+				m.restored,
+				log.With(m.logger, "alert", r.Alert),
+			))
+			continue
+		}
+
+		rules = append(rules, NewRecordingRule(
+			r.Record,
+			expr,
+			labels.FromMap(r.Labels),
+		))
+	}
+
+	if len(rules) > 0 {
+		groups[groupKey(rName, rFn)] = NewGroup(GroupOptions{
+			Name:          rName,
+			File:          rFn,
+			Interval:      itv,
+			Rules:         rules,
+			ShouldRestore: shouldRestore,
+			Opts:          m.opts,
+			done:          m.done,
+		})
+	}
+
+	return groups, nil
 }
 
 // LoadGroups reads groups from a list of files.
